@@ -1,0 +1,85 @@
+name: Triage de Issues con Claude
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  triage:
+    # Solo la primera vez: si Claude ya analizó el issue, no repetir en ediciones posteriores
+    if: ${{ !contains(github.event.issue.labels.*.name, 'triage:completado') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Asegurar taxonomía de labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          crear() { gh label create "$1" --color "$2" --description "$3" --force; }
+          crear "tipo:bug"           "d73a4a" "Algo no funciona como debería"
+          crear "tipo:mejora"        "a2eeef" "Nueva función o mejora de una existente"
+          crear "tipo:documentación" "0075ca" "Cambios en documentación (README, CLAUDE.md, comentarios)"
+          crear "área:gameplay"      "5319e7" "Lógica de juego: piezas, colisiones, líneas, puntuación, niveles"
+          crear "área:render"        "1d76db" "Dibujo en canvas"
+          crear "área:ui"            "bfdadc" "HTML/CSS, layout, textos visibles"
+          crear "área:controles"     "fbca04" "Entrada de teclado"
+          crear "prioridad:alta"     "b60205" "Bloquea el juego o provoca pérdida de datos"
+          crear "prioridad:media"    "d4c5f9" "Importante pero no bloqueante"
+          crear "prioridad:baja"     "0e8a16" "Menor o cosmético"
+          crear "necesita-triage"    "ededed" "Falta información para clasificar el issue"
+          crear "triage:completado"  "c2e0c6" "Claude ya analizó este issue"
+
+      - name: Analizar issue con Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          claude_args: '--allowedTools "Bash(gh issue view:*),Bash(gh issue edit:*)"'
+          prompt: |
+            Eres el triador de issues del repositorio ${{ github.repository }}: un Tetris en
+            JavaScript vanilla (HTML5 Canvas + CSS). Solo tres archivos relevantes: `index.html`,
+            `style.css` y `game.js`. No hay build, ni tests, ni linter. `game.js` es un único
+            archivo bajo `'use strict'` con todo el estado en variables a nivel de módulo.
+
+            Responde SIEMPRE en español (es la convención del proyecto).
+
+            Analiza el issue actual (#${{ github.event.issue.number }}), cuyo título y cuerpo tienes
+            en el contexto. NO edites el título ni el cuerpo del issue, NO lo cierres y NO abras PRs.
+
+            Pasos:
+
+            1. Lee el código relevante del repo (`game.js`, `style.css`, `index.html`) para
+               fundamentar el diagnóstico en funciones y líneas concretas.
+
+            2. Asigna labels usando ÚNICAMENTE este conjunto, y aplícalos con:
+                 gh issue edit ${{ github.event.issue.number }} --add-label "<label>"
+               Reglas:
+               - Exactamente UN `tipo:*` -> tipo:bug | tipo:mejora | tipo:documentación
+               - CERO o MÁS `área:*` -> área:gameplay | área:render | área:ui | área:controles
+               - Exactamente UNA `prioridad:*` -> prioridad:alta | prioridad:media | prioridad:baja
+               - Si falta información esencial para clasificar o reproducir, añade además
+                 `necesita-triage` y pide en el comentario los datos que faltan.
+
+            3. Escribe en el comentario de seguimiento (el que gestiona esta acción) un diagnóstico
+               con EXACTAMENTE estas secciones en Markdown:
+               - **Resumen**: 1-2 frases sobre qué se pide o qué falla.
+               - **Componentes afectados**: archivos y funciones concretas de
+                 `game.js` / `style.css` / `index.html`.
+               - **Causa probable / análisis técnico**: por qué ocurre o qué hay que cambiar.
+               - **Enfoque de solución propuesto**: pasos accionables y ordenados que sirvan para
+                 implementar el arreglo después (menciona funciones/constantes a tocar; recuerda el
+                 gotcha de `COLS`/`ROWS`/`BLOCK` duplicado entre `game.js` y el `<canvas>` de
+                 `index.html`).
+               - **Criterios de aceptación**: lista verificable de condiciones para dar por resuelto.
+               - **Complejidad estimada**: baja | media | alta, con los principales riesgos.
+
+            4. Cuando termines todo lo anterior, marca el issue como analizado:
+                 gh issue edit ${{ github.event.issue.number }} --add-label "triage:completado"
