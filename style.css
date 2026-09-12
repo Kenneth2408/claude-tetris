@@ -8,6 +8,7 @@
   --bg: #0f0f17;
   --text: #e0e0e0;
   --title-color: #7aa2f7;
+  --title-glow: rgba(122, 162, 247, 0.5);
   --board-bg: #1a1a25;
   --board-border: #2a2a3a;
   --grid-line-color: #22222e;
@@ -30,6 +31,7 @@ body.light-theme {
   --bg: #f2f2f7;
   --text: #1a1a25;
   --title-color: #3f5fc4;
+  --title-glow: rgba(63, 95, 196, 0.4);
   --board-bg: #ffffff;
   --board-border: #c9c9d6;
   --grid-line-color: #e2e2ea;
@@ -46,6 +48,78 @@ body.light-theme {
   --btn-color: #ffffff;
   --toggle-bg: #e6e6f0;
   --toggle-border: #c9c9d6;
+}
+
+/* ---- Skin Neón: tablero negro con acentos de brillo ---- */
+body.theme-neon {
+  --bg: #000000;
+  --text: #e0e0e0;
+  --title-color: #00e5ff;
+  --title-glow: rgba(0, 229, 255, 0.6);
+  --board-bg: #000000;
+  --board-border: #111111;
+  --grid-line-color: #111111;
+  --label-color: #4dd0e1;
+  --value-color: #00e5ff;
+  --kbd-bg: #001a1f;
+  --kbd-border: #00565f;
+  --kbd-color: #00e5ff;
+  --controls-color: #4dd0e1;
+  --overlay-bg: rgba(0, 0, 0, 0.85);
+  --overlay-title-color: #ff5252;
+  --btn-bg: #00e5ff;
+  --btn-bg-hover: #62f2ff;
+  --btn-color: #000000;
+  --toggle-bg: #001a1f;
+  --toggle-border: #00565f;
+}
+
+/* ---- Skin Pastel: paleta suave y clara ---- */
+body.theme-pastel {
+  --bg: #faf3f7;
+  --text: #5a4a56;
+  --title-color: #c98bb5;
+  --title-glow: rgba(201, 139, 181, 0.4);
+  --board-bg: #fff8fb;
+  --board-border: #ecd7e6;
+  --grid-line-color: #f3e4ee;
+  --label-color: #b895ac;
+  --value-color: #c98bb5;
+  --kbd-bg: #f6e9f1;
+  --kbd-border: #ecd7e6;
+  --kbd-color: #8a7382;
+  --controls-color: #a68f9c;
+  --overlay-bg: rgba(255, 248, 251, 0.85);
+  --overlay-title-color: #e28ba0;
+  --btn-bg: #c98bb5;
+  --btn-bg-hover: #d8a3c6;
+  --btn-color: #ffffff;
+  --toggle-bg: #f6e9f1;
+  --toggle-border: #ecd7e6;
+}
+
+/* ---- Skin Pixel art: tono de consola retro ---- */
+body.theme-pixel {
+  --bg: #10131a;
+  --text: #e0e0e0;
+  --title-color: #ecc94b;
+  --title-glow: rgba(236, 201, 75, 0.5);
+  --board-bg: #14171f;
+  --board-border: #38b2ac;
+  --grid-line-color: #232733;
+  --label-color: #68d391;
+  --value-color: #ecc94b;
+  --kbd-bg: #1c2029;
+  --kbd-border: #38b2ac;
+  --kbd-color: #9f7aea;
+  --controls-color: #68d391;
+  --overlay-bg: rgba(16, 19, 26, 0.85);
+  --overlay-title-color: #fc8181;
+  --btn-bg: #ecc94b;
+  --btn-bg-hover: #f6d97a;
+  --btn-color: #10131a;
+  --toggle-bg: #1c2029;
+  --toggle-border: #38b2ac;
 }
 
 body {
@@ -77,7 +151,7 @@ body {
   font-weight: 800;
   letter-spacing: 8px;
   color: var(--title-color);
-  text-shadow: 0 0 20px rgba(122, 162, 247, 0.5);
+  text-shadow: 0 0 20px var(--title-glow);
 }
 
 #theme-toggle {
@@ -97,6 +171,23 @@ body {
 }
 
 #theme-toggle:hover {
+  filter: brightness(1.15);
+}
+
+#skin-select {
+  background: var(--toggle-bg);
+  border: 1px solid var(--toggle-border);
+  color: var(--text);
+  border-radius: 6px;
+  height: 32px;
+  padding: 0 8px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#skin-select:hover {
   filter: brightness(1.15);
 }
 
