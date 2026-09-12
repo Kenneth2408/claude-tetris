@@ -231,3 +231,161 @@ kbd {
 #restart-btn:hover {
   background: var(--btn-bg-hover);
 }
+
+/* ---- Pantalla de inicio ---- */
+.start-title {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 6px;
+  color: var(--title-color);
+  text-shadow: 0 0 20px rgba(122, 162, 247, 0.5);
+}
+
+#start-screen .overlay-box {
+  width: 220px;
+}
+
+/* ---- Records / estadísticas ---- */
+.highscore-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  min-width: 200px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.highscore-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.hs-rank {
+  color: var(--label-color);
+  width: 16px;
+  text-align: right;
+  font-weight: 700;
+}
+
+.hs-name {
+  flex: 1;
+  text-align: left;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hs-score {
+  color: var(--value-color);
+  font-weight: 700;
+}
+
+.highscore-list li.new-entry {
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  box-shadow: 0 0 12px rgba(122, 162, 247, 0.6);
+}
+
+.highscore-list li.new-entry .hs-rank,
+.highscore-list li.new-entry .hs-name,
+.highscore-list li.new-entry .hs-score {
+  color: var(--btn-color);
+}
+
+.no-scores {
+  font-size: 12px;
+  color: var(--label-color);
+  font-style: italic;
+}
+
+#gameover-stats,
+#start-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--controls-color);
+}
+
+.stat-row .label {
+  letter-spacing: 1px;
+}
+
+.stat-row .value {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--value-color);
+}
+
+/* ---- Entrada de nombre para nuevo récord ---- */
+#highscore-entry {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#highscore-entry.hidden {
+  display: none;
+}
+
+#player-name-input {
+  background: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  width: 130px;
+}
+
+#player-name-input:focus {
+  outline: 2px solid var(--btn-bg);
+}
+
+#save-score-btn {
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#save-score-btn:hover {
+  background: var(--btn-bg-hover);
+}
+
+#reset-scores-btn {
+  margin-top: 4px;
+  background: transparent;
+  color: var(--controls-color);
+  border: 1px solid var(--toggle-border);
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 12px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.15s, color 0.15s;
+}
+
+#reset-scores-btn:hover {
+  background: var(--toggle-bg);
+  color: var(--text);
+}
