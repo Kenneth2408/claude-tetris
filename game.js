@@ -40,8 +40,17 @@ const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 const themeToggleBtn = document.getElementById('theme-toggle');
+const pauseMenu = document.getElementById('pause-menu');
+const resumeBtn = document.getElementById('resume-btn');
+const restartPauseBtn = document.getElementById('restart-pause-btn');
+const toggleControlsBtn = document.getElementById('toggle-controls-btn');
+const pauseControlsPanel = document.getElementById('pause-controls-panel');
 
-let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
+let board, current, next, score, lines, level, startLevel, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
+
+function computeDropInterval(lvl) {
+  return Math.max(100, 1000 - (lvl - 1) * 90);
+}
 
 function applyTheme(isLight) {
   document.body.classList.toggle('light-theme', isLight);
@@ -123,8 +132,9 @@ function clearLines() {
   if (cleared) {
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
-    dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    // el nivel sube desde el nivel inicial elegido, no siempre desde 1
+    level = startLevel + Math.floor(lines / 10);
+    dropInterval = computeDropInterval(level);
     updateHUD();
   }
 }
@@ -247,13 +257,12 @@ function togglePause() {
   if (gameOver) return;
   paused = !paused;
   if (!paused) {
+    pauseMenu.classList.add('hidden');
     lastTime = performance.now();
     loop(lastTime);
   } else {
     cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSA';
-    overlayScore.textContent = '';
-    overlay.classList.remove('hidden');
+    pauseMenu.classList.remove('hidden');
   }
 }
 
@@ -277,22 +286,30 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  const startLevelSelect = document.getElementById('start-level-select');
+  const chosenLevel = startLevelSelect ? (parseInt(startLevelSelect.value, 10) || 1) : 1;
+  startLevel = chosenLevel;
+  level = chosenLevel;
+  dropInterval = computeDropInterval(level);
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
   dropAccum = 0;
   lastTime = performance.now();
   next = randomPiece();
   spawn();
   updateHUD();
   overlay.classList.add('hidden');
+  pauseMenu.classList.add('hidden');
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
 }
 
 document.addEventListener('keydown', e => {
-  if (e.code === 'KeyP') { togglePause(); return; }
+  // si el foco está en el selector de nivel u otro control de formulario,
+  // dejamos que Escape lo cierre de forma nativa en vez de alternar la pausa
+  const targetTag = e.target && e.target.tagName;
+  const isFormControl = targetTag === 'SELECT' || targetTag === 'INPUT' || targetTag === 'TEXTAREA';
+  if (e.code === 'KeyP' || (e.code === 'Escape' && !isFormControl)) { togglePause(); return; }
   if (paused || gameOver) return;
   switch (e.code) {
     case 'ArrowLeft':
@@ -318,6 +335,11 @@ document.addEventListener('keydown', e => {
 
 restartBtn.addEventListener('click', init);
 themeToggleBtn.addEventListener('click', toggleTheme);
+resumeBtn.addEventListener('click', togglePause);
+restartPauseBtn.addEventListener('click', init);
+toggleControlsBtn.addEventListener('click', () => {
+  pauseControlsPanel.classList.toggle('hidden');
+});
 
 initTheme();
 init();
