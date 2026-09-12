@@ -45,6 +45,7 @@ const resumeBtn = document.getElementById('resume-btn');
 const restartPauseBtn = document.getElementById('restart-pause-btn');
 const toggleControlsBtn = document.getElementById('toggle-controls-btn');
 const pauseControlsPanel = document.getElementById('pause-controls-panel');
+const startLevelSelect = document.getElementById('start-level-select');
 
 let board, current, next, score, lines, level, startLevel, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 
@@ -286,7 +287,6 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  const startLevelSelect = document.getElementById('start-level-select');
   const chosenLevel = startLevelSelect ? (parseInt(startLevelSelect.value, 10) || 1) : 1;
   startLevel = chosenLevel;
   level = chosenLevel;
@@ -338,7 +338,8 @@ themeToggleBtn.addEventListener('click', toggleTheme);
 resumeBtn.addEventListener('click', togglePause);
 restartPauseBtn.addEventListener('click', init);
 toggleControlsBtn.addEventListener('click', () => {
-  pauseControlsPanel.classList.toggle('hidden');
+  const nowHidden = pauseControlsPanel.classList.toggle('hidden');
+  toggleControlsBtn.textContent = nowHidden ? 'Ver controles' : 'Ocultar controles';
 });
 
 initTheme();
